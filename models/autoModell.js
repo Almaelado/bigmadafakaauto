@@ -9,6 +9,6 @@ Auto.osszes = async () => {
         console.error(error);
         throw error;
     }
-}
+};
 
 module.exports = Auto;

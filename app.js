@@ -20,8 +20,9 @@ var corsOptions ={
 app.use(cors(corsOptions)); 
 
 var autoRouter = require('./routes/auto');
+var autoModRouter = require('./routes/autoMod');
 app.use('/auto', autoRouter);
-
+app.use('/autoMod', autoModRouter);
 
 
 module.exports = app;
