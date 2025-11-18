@@ -92,6 +92,16 @@ const autoController={
             res.status(500).json({ message: error.message });
         }
     },
+    async szuro(req, res,next) {
+        if (Object.keys(req.query).length > 0) {
+        console.log("Van query:", req.query);
+    } else {
+        console.log("Nincs query");
+    }
+
+    next();
+        
+    },
 
 };
 module.exports=autoController;

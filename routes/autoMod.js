@@ -11,6 +11,6 @@ router.delete('/torol/:id', autoController.torol);
 router.get('/marka', autoController.getMarka);
 router.get('/szin', autoController.getSzin);
 router.get('/uzemanyag', autoController.getUzemanyag);
-router.get()
+router.get('/szuro', autoController.szuro);
 
 module.exports = router;
