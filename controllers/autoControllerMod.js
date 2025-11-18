@@ -63,7 +63,35 @@ const autoController={
         } catch (error) {
             res.status(500).json({message:error.message});
         }
-    }
+    },
+
+    async getMarka(req, res) {
+        try {
+            const autos =  await Auto.getMarka();
+            res.status(200).json(autos);
+        } catch (error) {
+            console.error("Error fetching all cars:", error);
+            res.status(500).json({ message: error.message });
+        }
+    },
+    async getSzin(req, res) {
+        try {
+            const autos =  await Auto.getSzin();
+            res.status(200).json(autos);
+        } catch (error) {
+            console.error("Error fetching all cars:", error);
+            res.status(500).json({ message: error.message });
+        }
+    },
+    async getUzemanyag(req, res) {
+        try {
+            const autos =  await Auto.getUzemanyag();
+            res.status(200).json(autos);
+        } catch (error) {
+            console.error("Error fetching all cars:", error);
+            res.status(500).json({ message: error.message });
+        }
+    },
 
 };
 module.exports=autoController;

@@ -1,4 +1,4 @@
-const pool = require('../config/dbMod');
+const pool = require('../config/db.js');
 const Auto = {};
 
 Auto.osszes = async () => {
@@ -51,6 +51,33 @@ Auto.modosit = async (id, autoData) => {
 Auto.torol = async (id) => {
     try {
         await pool.execute('DELETE FROM osszes_auto WHERE id = ?', [id]);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+Auto.getMarka = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM marka');
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+Auto.getSzin = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM szin');
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+Auto.getUzemanyag = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM uzemanyag');
+        return rows;
     } catch (error) {
         console.error(error);
         throw error;
