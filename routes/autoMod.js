@@ -12,5 +12,7 @@ router.get('/marka', autoController.getMarka);
 router.get('/szin', autoController.getSzin);
 router.get('/uzemanyag', autoController.getUzemanyag);
 router.get('/szuro', autoController.szuro);
+router.post('/admin/login', autoController.login);
+
 
 module.exports = router;

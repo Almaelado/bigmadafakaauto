@@ -1,4 +1,17 @@
+const jwt = require('jsonwebtoken');
+
 const Auto=require('../models/autoModellMod');
+
+const ACCESS_SECRET = process.env.ACCESS_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
+
+function generateAccessToken(user) {
+    return jwt.sign(user, ACCESS_SECRET, { expiresIn: '15m' }); 
+}
+
+function generateRefreshToken(user) {
+    return jwt.sign(user, REFRESH_SECRET, { expiresIn: '7d' }); 
+}
 
 const autoController={
     async osszes(req, res) {
@@ -97,11 +110,43 @@ const autoController={
         console.log("Van query:", req.query);
     } else {
         console.log("Nincs query");
-    }
-
-    next();
-        
+    }   
     },
+    async login (req, res,next){   
+        const { username, password } = req.body;    
+        /*
+        const user = await authModel.validatePassword(username,password);
+        console.log('Bejelentkezési kísérlet:', user);
+        if (user!= false){
+            const accessToken = generateAccessToken(user);
+            const refreshToken = generateRefreshToken(user);
+        res.cookie('refreshToken', refreshToken, 
+            { httpOnly: true, 
+              secure: false, // true ha HTTPS-t használsz
+              sameSite: 'Lax', // Strict, Lax, None
+              maxAge: 7*24*60*60*1000 // 7 nap
+            });
+        res.json({ accessToken });
 
+        } else {
+            res.status(401).send('Érvénytelen belépés');
+        }*/
+       if(username === 'admin' && password === 'password'){
+            const user = { username: 'admin', role: 'admin' }; 
+            const accessToken = generateAccessToken(user);
+            const refreshToken = generateRefreshToken(user);
+            res.cookie('refreshToken', refreshToken, 
+                { httpOnly: true, 
+                  secure: false, // true ha HTTPS-t használsz
+                  sameSite: 'Lax', // Strict, Lax, None
+                  maxAge: 7*24*60*60*1000 // 7 nap
+                });
+            res.json({ accessToken });
+        } else {
+            res.status(401).send('Érvénytelen belépés');
+        }
+
+}
+    
 };
 module.exports=autoController;

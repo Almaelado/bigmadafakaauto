@@ -1,4 +1,5 @@
 const pool = require('../config/db.js');
+const bcrypt = require('bcrypt');
 const Auto = {};
 
 Auto.osszes = async () => {
@@ -83,5 +84,17 @@ Auto.getUzemanyag = async () => {
         throw error;
     }
 };
+Auto.getfelhasz = async (username) =>{
+    const [rows] = await pool.query("SELECT * FROM user WHERE username = ?", [username]);
+    return rows[0];
+}
+Auto.validatePassword = async (username, password) =>{
+    const user = await Auto.getfelhasz(username);
+    if (!user) {
+        return false;
+    }
+    const match = await bcrypt.compare(password, user.password);
+    return match ? user : false;
+}
 
 module.exports = Auto;
