@@ -96,5 +96,14 @@ Auto.validatePassword = async (username, password) =>{
     const match = await bcrypt.compare(password, user.password);
     return match ? user : false;
 }
+Auto.szuro = async (sql, values) => {
+    try {
+        const [rows] = await pool.execute(sql, values);
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
 
 module.exports = Auto;
