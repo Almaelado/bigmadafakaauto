@@ -12,7 +12,7 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.DB_PORT || '3000');
 app.set('port', port);
 
 /**
@@ -87,4 +87,11 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log(port);
+  console.log("dotenv beállítások:");
+  console.log("user: ",process.env.DB_USER);
+  console.log("password: ",process.env.DB_PASSWORD);
+  console.log("host: ",process.env.DB_HOST);
+  console.log("port: ",process.env.DB_PORT);
+  console.log("database: ",process.env.DB_DATABASE);
 }
