@@ -105,80 +105,115 @@ const autoController={
             res.status(500).json({ message: error.message });
         }
     },
-    async  szuro(req, res, next) {
-    if (Object.keys(req.query).length > 0) {
+    async getValto(req, res) {
         try {
-            const szuro_json = {
-                markak:["Mahindra","Hyundai"],
-                uzemanyag:["Diesel","Petrol"],
-                szin:["zöld","sárga"],
-                arRange:[3100000,17300000],
-                kmRange:[100000,350000],
-                evjarat:[1930,1988],
-                irat:true,
-                valto:["Manuális"],
-                motormeret:["1.2"], // mindig egy elem
-                ajto:["4"],
-                szemely:["2"]
-            };
-
-            let whereClauses = [];
-            let values = [];
-
-            // Többi IN mező (kivéve motormeret)
-            const inFields = ["nev", "üzemanyag", "szin_nev", "váltó", "ajtó", "szemelyek"];
-            inFields.forEach(field => {
-                if (szuro_json[field] && szuro_json[field].length > 0) {
-                    whereClauses.push(`${field} IN (${szuro_json[field].map(() => '?').join(',')})`);
-                    values.push(...szuro_json[field]);
-                }
-            });
-
-            // Range mezők -> BETWEEN
-            const rangeFields = { arRange: "ar", kmRange: "km", evjarat: "kiadasiev" };
-            for (const key in rangeFields) {
-                if (szuro_json[key] && szuro_json[key].length === 2) {
-                    whereClauses.push(`${rangeFields[key]} BETWEEN ? AND ?`);
-                    values.push(szuro_json[key][0], szuro_json[key][1]);
-                }
-            }
-
-            // Boolean mező
-            if (typeof szuro_json.irat === "boolean") {
-                whereClauses.push(`irat = ?`);
-                values.push(szuro_json.irat ? 1 : 0);
-            }
-
-            // motormeret -> mindig >=
-            if (szuro_json.motormeret && szuro_json.motormeret.length === 1) {
-                whereClauses.push(`motormeret >= ?`);
-                values.push(szuro_json.motormeret[0]);
-            }
-
-            // SQL összeállítása
-            let sql = "SELECT * FROM osszes_auto";
-            if (whereClauses.length > 0) {
-                sql += " WHERE " + whereClauses.join(" AND ");
-            }
-
-            const [results] = await Auto.szuro(sql, values);
-            res.status(200).json({ message: "Szűrés sikeres", results });
-        } catch (error) {
-            console.error("Error in filtering:", error);
-            res.status(500).json({ message: error.message });
-        }
-    } else {
-        console.log("Nincs query");
-        try {
-            const autos = await Auto.osszes();
+            const autos =  await Auto.getValto();
             res.status(200).json(autos);
         } catch (error) {
             console.error("Error fetching all cars:", error);
             res.status(500).json({ message: error.message });
         }
+    },
+    async getAjto(req, res) {   
+        try {
+            const autos =  await Auto.getAjto();
+            res.status(200).json(autos);
+        } catch (error) {
+            console.error("Error fetching all cars:", error);
+            res.status(500).json({ message: error.message });
+        }
+    },
+    async getSzemely(req, res) {
+        try {
+            const autos =  await Auto.getSzemely();
+            res.status(200).json(autos);
+        } catch (error) {
+            console.error("Error fetching all cars:", error);
+            res.status(500).json({ message: error.message });
+        }
+    },
+    async szuro(req, res, next) {
+    try {/*
+        const szuro_json = {
+            markak:["Mahindra","Hyundai"],      // -> SQL: nev
+            uzemanyag:["Diesel","Petrol"],       // -> SQL: üzemanyag
+            szin:["zöld","sárga"],               // -> SQL: szin_nev
+            arRange:[0,17300000],
+            kmRange:[0,350000],
+            evjarat:[1930,2025],
+            irat:true,
+            valto:[],                  // -> SQL: váltó
+            motormeret:[],
+            ajto:[],                           // -> SQL: ajto
+            szemely:[]                         // -> SQL: szemelyek
+        };
+        */
+       
+        const szuro_json = req.body;
+        console.log(szuro_json);
+
+        let whereClauses = [];
+        let values = [];
+
+        // Milyen JSON kulcs -> melyik SQL oszlop
+        const fieldMap = {
+            markak: "nev",
+            uzemanyag: "üzemanyag",
+            szin: "szin_nev",
+            valto: "váltó",
+            ajto: "ajtoszam",
+            szemely: "szemelyek"
+        };
+
+        // ⬅⬅ csak akkor kerül be, ha a tömb nem üres!
+        for (const key in fieldMap) {
+            const sqlField = fieldMap[key];
+
+            if (Array.isArray(szuro_json[key]) && szuro_json[key].length > 0) {
+                whereClauses.push(`${sqlField} IN (${szuro_json[key].map(() => '?').join(',')})`);
+                values.push(...szuro_json[key]);
+            }
+        }
+
+        // Range mezők -> BETWEEN
+        const rangeFields = {
+            arRange: "ar",
+            kmRange: "km",
+            evjarat: "kiadasiev"
+        };
+
+        for (const key in rangeFields) {
+            if (Array.isArray(szuro_json[key]) && szuro_json[key].length === 2) {
+                whereClauses.push(`${rangeFields[key]} BETWEEN ? AND ?`);
+                values.push(szuro_json[key][0], szuro_json[key][1]);
+            }
+        }
+
+        // Boolean mező
+        if (typeof szuro_json.irat === "boolean") {
+            whereClauses.push(`irat = ?`);
+            values.push(szuro_json.irat ? 1 : 0);
+        }
+
+        // motormeret mindig >= és 1 elem
+        if (Array.isArray(szuro_json.motormeret) && szuro_json.motormeret.length === 1) {
+            whereClauses.push(`motormeret >= ?`);
+            values.push(szuro_json.motormeret[0]);
+        }
+
+        // SQL összeállítása
+        let sql = "SELECT * FROM osszes_auto";
+        if (whereClauses.length > 0) {
+            sql += " WHERE " + whereClauses.join(" AND ");
+        }
+
+        const results = await Auto.szuro(sql, values);
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Error in filtering:", error);
+        res.status(500).json({ message: error.message });
     }
 },
-
     async login (req, res,next){   
         const { username, password } = req.body;    
         /*

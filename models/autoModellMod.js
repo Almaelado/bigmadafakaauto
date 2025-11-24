@@ -88,6 +88,33 @@ Auto.getfelhasz = async (username) =>{
     const [rows] = await pool.query("SELECT * FROM user WHERE username = ?", [username]);
     return rows[0];
 }
+Auto.getValto = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT váltó FROM osszes_auto GROUP BY váltó');
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+Auto.getAjto = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT ajtoszam FROM osszes_auto GROUP BY ajtoszam');
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+Auto.getSzemely = async () => {
+    try {
+        const [rows] = await pool.execute('SELECT szemelyek FROM osszes_auto GROUP BY szemelyek');
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
 Auto.validatePassword = async (username, password) =>{
     const user = await Auto.getfelhasz(username);
     if (!user) {
