@@ -11,8 +11,11 @@ router.delete('/torol/:id', autoController.torol);
 router.get('/marka', autoController.getMarka);
 router.get('/szin', autoController.getSzin);
 router.get('/uzemanyag', autoController.getUzemanyag);
-router.get('/szuro', autoController.szuro);
+router.post('/szuro', autoController.szuro);
 router.post('/admin/login', autoController.login);
+router.get('/valtok', autoController.getValto);
+router.get('/ajtok', autoController.getAjto);
+router.get('/szemelyek', autoController.getSzemely);
 
 
 module.exports = router;
