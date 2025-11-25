@@ -150,7 +150,7 @@ const autoController={
         */
        
         const szuro_json = req.body;
-        console.log(szuro_json);
+        console.log("Szurok: ",szuro_json);
 
         let whereClauses = [];
         let values = [];
@@ -191,15 +191,19 @@ const autoController={
 
         // Boolean mező
         if (typeof szuro_json.irat === "boolean") {
-            whereClauses.push(`irat = ?`);
-            values.push(szuro_json.irat ? 1 : 0);
+            if(szuro_json.irat==true){
+                whereClauses.push(`irat = ?`);
+                values.push(1);
+            }
+
         }
 
-        // motormeret mindig >= és 1 elem
-        if (Array.isArray(szuro_json.motormeret) && szuro_json.motormeret.length === 1) {
-            whereClauses.push(`motormeret >= ?`);
-            values.push(szuro_json.motormeret[0]);
-        }
+            if(szuro_json.motormeret>0){
+                whereClauses.push(`motormeret >= ?`);
+            values.push(szuro_json.motormeret);
+            }
+            
+        
 
         // SQL összeállítása
         let sql = "SELECT * FROM osszes_auto";
