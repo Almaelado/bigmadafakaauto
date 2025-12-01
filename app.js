@@ -19,10 +19,12 @@ var corsOptions ={
 }
 app.use(cors(corsOptions)); 
 
-var autoRouter = require('./routes/auto');
 var autoModRouter = require('./routes/autoMod');
-app.use('/auto', autoRouter);
-app.use('/autoMod', autoModRouter);
+var authRouter = require('./routes/authRouter');
+var authMiddleware = require('./middleware/authAuto');
+
+app.use('/auth', authRouter);
+app.use('/auto' ,autoModRouter);
 
 
 module.exports = app;
